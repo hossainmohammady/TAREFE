@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#343434">
+<title>محاسبه کرایه بار</title>
+<link rel="stylesheet" href="/www/style.css">
+<script type="module" src="/www/app.js"></script>
+</head>
+<body>
+<main class="baseframe">
+  <header class="page-header">
+    <div>
+      <h1>محاسبه کرایه بار</h1>
+      <p id="pageSubtitle">اطلاعات بار و محاسبه کرایه</p>
+    </div>
+    <button id="themeToggle" class="theme-toggle" type="button" title="تغییر حالت روشن و تاریک">☼</button>
+  </header>
+
+  <section class="page active" id="calculatorPage">
+    <div class="inputdiv">
+      <label for="weightInput">وزن:</label>
+      <div class="field-control">
+        <input id="weightInput" class="input numeric-input" type="text" inputmode="numeric" autocomplete="off" placeholder="وزن را وارد کنید">
+        <span class="unit">کیلوگرم</span>
+      </div>
+      <small class="error-message" id="weightError"></small>
+    </div>
+
+    <div class="inputdiv city-input-row" id="cityRow">
+      <label for="cityInput">شهر:</label>
+      <div class="field-control">
+        <input id="cityInput" class="input" type="text" autocomplete="off" placeholder="نام یا کد شهر را وارد کنید">
+        <div id="cityResults" class="results"></div>
+      </div>
+      <small class="error-message" id="cityError"></small>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="inputdiv">
+      <label for="baseRate">کرایه پایه:</label>
+      <div class="field-control">
+        <input id="baseRate" class="input readonly" type="text" readonly placeholder="0">
+        <span class="unit">تومان</span>
+      </div>
+    </div>
+
+    <div class="inputdiv">
+      <label for="totalRate">کرایه کل:</label>
+      <div class="field-control">
+        <input id="totalRate" class="input readonly" type="text" readonly placeholder="0">
+        <span class="unit">تومان</span>
+      </div>
+    </div>
+
+    <div class="inputdiv">
+      <label for="insuranceInput">بیمه:</label>
+      <div class="field-control">
+        <input id="insuranceInput" class="input numeric-input" type="text" inputmode="numeric" autocomplete="off" placeholder="مبلغ بیمه">
+        <span class="unit">تومان</span>
+      </div>
+    </div>
+    <div class="inputdiv">
+      <label for="taxInput"> کمیسیون:</label>
+      <div class="field-control">
+        <input id="taxInput"  class="input numeric-input" type="text" inputmode="numeric" autocomplete="off" placeholder=" کمیسیون">
+        <span class="unit">درصد</span>
+        <button id="refresh" class="refresh" type="button" title="">↻</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="final-price">
+      <div class="final-item">
+        <span>مبلغ نهایی کرایه پایه:</span>
+        <div class="final-value-row">
+          <strong id="finalBase">۰ </strong><strong>ریال</strong>
+          <button class="copy-btn" type="button" data-copy="finalBase">کپی</button>
+        </div>
+      </div>
+      <div class="final-item">
+        <span>مبلغ نهایی کرایه کل با بیمه:</span>
+        <div class="final-value-row">
+          <strong id="finalTotal">۰ </strong><strong>ریال</strong>
+          <button class="copy-btn" type="button" data-copy="finalTotal">کپی</button>
+        </div>
+      </div>
+      <div class="final-item">
+        <span>کمیسیون :</span>
+        <div class="final-value-row">
+          <strong id="finaltax">۰ </strong><strong>ریال</strong>
+          <button class="copy-btn" type="button" data-copy="finaltax">کپی</button>
+        </div>
+      </div>
+    </div>
+    <button class="clear-btn" id="clearCalculator" type="button">پاک کردن فرم</button>
+  </section>
+
+  <section class="page" id="citiesPage">
+    <h2 class="section-title">مدیریت شهرها</h2>
+    <form id="cityForm" autocomplete="off">
+      <input type="hidden" id="editingId">
+      <div class="inputdiv">
+        <label for="newId">کد شهر:</label>
+        <div class="field-control"><input id="newId" class="input" type="text" inputmode="numeric" placeholder="کد شهر"></div>
+      </div>
+      <div class="inputdiv">
+        <label for="newName">نام شهر:</label>
+        <div class="field-control"><input id="newName" class="input" type="text" placeholder="نام شهر"></div>
+      </div>
+      <div class="inputdiv">
+        <label for="newBase">تعرفه اول:</label>
+        <div class="field-control">
+          <input id="newBase" class="input numeric-input" type="text" inputmode="numeric" placeholder="کرایه پایه">
+          <span class="unit">تومان</span>
+        </div>
+      </div>
+      <div class="inputdiv">
+        <label for="newTotal">تعرفه دوم:</label>
+        <div class="field-control">
+          <input id="newTotal" class="input numeric-input" type="text" inputmode="numeric" placeholder="کرایه کل">
+          <span class="unit">تومان</span>
+        </div>
+      </div>
+      <div class="form-buttons">
+        <button class="action-btn" type="submit" id="saveCity">ثبت شهر</button>
+        <button class="action-btn secondary hidden" type="button" id="cancelEdit">انصراف</button>
+      </div>
+    </form>
+    <div class="divider"></div>
+    <input id="citySearch" class="search-input" type="search" placeholder="جستجو در شهرها...">
+    <div class="city-list" id="cityList"></div>
+  </section>
+
+  <section class="page" id="settingsPage">
+    <h2 class="section-title">تنظیمات</h2>
+    <div class="inputdiv">
+      <label for="defaultInsurance">بیمه پیش‌فرض:</label>
+      <div class="field-control">
+        <input id="defaultInsurance" class="input numeric-input" type="text" inputmode="numeric" placeholder="مبلغ بیمه">
+        <span class="unit">تومان</span>
+      </div>
+    </div>
+    <div class="inputdiv">
+      <label for="defaultTAX">درصد کمیسیون پیش‌فرض:</label>
+      <div class="field-control">
+        <input id="defaultTAX" class="input " type="text" inputmode="numeric" placeholder="درصد کمیسیون">
+        <span class="unit">درصد</span>
+      </div>
+    </div>
+    <button class="action-btn full-btn" id="saveInsurance" type="button">ذخیره مبلغ پیش‌فرض بیمه</button>
+    <div class="divider"></div>
+    <div class="setting-line">
+      <div>
+        <strong>پوسته برنامه</strong>
+        <small>حالت روشن یا تاریک</small>
+      </div>
+      <div class="theme-options">
+        <button type="button" id="darkMode" class="mode-btn">تاریک</button>
+        <button type="button" id="lightMode" class="mode-btn">روشن</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="setting-line">
+      <div>
+        <strong>نسخه پشتیبان</strong>
+        <small>ذخیره یا بازیابی شهرها و تنظیمات</small>
+      </div>
+      <div class="backup-actions">
+        <button id="exportBackup" class="action-btn secondary" type="button">خروجی</button>
+        <label for="importBackup" class="action-btn secondary file-button">بازیابی</label>
+        <input id="importBackup" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <button class="action-btn danger full-btn" id="restoreDefaults" type="button">بازگردانی شهرهای اولیه</button>
+    <p class="storage-note">اطلاعات در حافظه مرورگر همین دستگاه ذخیره می‌شوند. برای جلوگیری از ازدست‌رفتن اطلاعات، از نسخه پشتیبان استفاده کنید.</p>
+  </section>
+
+  <nav class="bottom-nav" aria-label="منوی پایین">
+    <button class="bottom-item active" data-page="calculatorPage" type="button">
+      <span class="nav-icon">⌗</span><span>محاسبه</span>
+    </button>
+    <button class="bottom-item" data-page="citiesPage" type="button">
+      <span class="nav-icon">⌖</span><span>شهرها</span>
+    </button>
+    <button class="bottom-item" data-page="settingsPage" type="button">
+      <span class="nav-icon">⚙</span><span>تنظیمات</span>
+    </button>
+  </nav>
+</main>
+<div class="toast" id="toast"></div>
+</body>
+</html>
